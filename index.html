@@ -8,11 +8,15 @@
 <body>
 
 <div class="container">
-  <h1>💰 Controle de Gastos</h1>
+  <h1>💰 Dashboard de Gastos</h1>
 
-  <div class="form">
-    <input type="text" id="nome" placeholder="Nome (ex: gasolina)">
-    <input type="number" id="valor" placeholder="Valor (R$)">
+  <div class="card total">
+    Total: R$ <span id="total">0,00</span>
+  </div>
+
+  <div class="card form">
+    <input type="text" id="nome" placeholder="Ex: Gasolina">
+    <input type="number" id="valor" placeholder="Valor">
     
     <select id="categoria">
       <option>Alimentação</option>
@@ -24,11 +28,13 @@
     <button onclick="adicionarGasto()">Adicionar</button>
   </div>
 
-  <h2>Total: R$ <span id="total">0</span></h2>
+  <div class="card">
+    <ul id="lista"></ul>
+  </div>
 
-  <ul id="lista"></ul>
-
-  <canvas id="grafico"></canvas>
+  <div class="card">
+    <canvas id="grafico"></canvas>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
