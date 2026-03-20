@@ -1,79 +1,144 @@
+// ===============================
+// 📦 DADOS
+// ===============================
 let lista = JSON.parse(localStorage.getItem("gastos")) || [];
 
 const listaHTML = document.getElementById("lista");
 const totalHTML = document.getElementById("total");
 
-function salvar() {
+let chart;
+
+// ===============================
+// 💰 FORMATAR MOEDA
+// ===============================
+function formatarMoeda(valor) {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
+}
+
+// ===============================
+// 💾 SALVAR NO LOCALSTORAGE
+// ===============================
+function salvarDados() {
   localStorage.setItem("gastos", JSON.stringify(lista));
 }
 
-function atualizarTela() {
-  listaHTML.innerHTML = "";
-  let total = 0;
-
-  let categorias = {};
-
-  lista.forEach((gasto, index) => {
-    total += gasto.valor;
-
-    // lista
-    let li = document.createElement("li");
-    li.innerHTML = `
-      ${gasto.nome} - R$ ${gasto.valor}
-      <button onclick="remover(${index})">X</button>
-    `;
-    listaHTML.appendChild(li);
-
-    // gráfico
-    categorias[gasto.categoria] =
-      (categorias[gasto.categoria] || 0) + gasto.valor;
-  });
-
-  totalHTML.innerText = total.toFixed(2);
-
-  criarGrafico(categorias);
-}
-
+// ===============================
+// ➕ ADICIONAR GASTO
+// ===============================
 function adicionarGasto() {
-  let nome = document.getElementById("nome").value;
-  let valor = parseFloat(document.getElementById("valor").value);
-  let categoria = document.getElementById("categoria").value;
+  const nome = document.getElementById("nome").value;
+  const valor = parseFloat(document.getElementById("valor").value);
+  const categoria = document.getElementById("categoria").value;
 
   if (!nome || !valor) {
-    alert("Preencha tudo!");
+    alert("Preencha todos os campos!");
     return;
   }
 
   lista.push({ nome, valor, categoria });
 
-  salvar();
+  salvarDados();
   atualizarTela();
+  limparCampos();
 }
 
-function remover(index) {
+// ===============================
+// 🧹 LIMPAR CAMPOS
+// ===============================
+function limparCampos() {
+  document.getElementById("nome").value = "";
+  document.getElementById("valor").value = "";
+}
+
+// ===============================
+// ❌ REMOVER GASTO
+// ===============================
+function removerGasto(index) {
   lista.splice(index, 1);
-  salvar();
+
+  salvarDados();
   atualizarTela();
 }
 
-let grafico;
+// ===============================
+// 🔄 ATUALIZAR TELA
+// ===============================
+function atualizarTela() {
+  listaHTML.innerHTML = "";
 
-function criarGrafico(categorias) {
-  let ctx = document.getElementById("grafico").getContext("2d");
+  let total = 0;
+  let categorias = {};
 
-  if (grafico) {
-    grafico.destroy();
+  lista.forEach((gasto, index) => {
+    total += gasto.valor;
+
+    // Criar item da lista
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>
+        ${gasto.nome}<br>
+        <small>${gasto.categoria}</small>
+      </span>
+      <span>
+        ${formatarMoeda(gasto.valor)}
+        <button onclick="removerGasto(${index})">X</button>
+      </span>
+    `;
+
+    listaHTML.appendChild(li);
+
+    // Somar categorias
+    categorias[gasto.categoria] =
+      (categorias[gasto.categoria] || 0) + gasto.valor;
+  });
+
+  // Atualizar total
+  totalHTML.innerText = formatarMoeda(total);
+
+  // Atualizar gráfico
+  atualizarGrafico(categorias);
+}
+
+// ===============================
+// 📊 GRÁFICO
+// ===============================
+function atualizarGrafico(categorias) {
+  const ctx = document.getElementById("grafico").getContext("2d");
+
+  if (chart) {
+    chart.destroy();
   }
 
-  grafico = new Chart(ctx, {
+  chart = new Chart(ctx, {
     type: "pie",
     data: {
       labels: Object.keys(categorias),
       datasets: [{
         data: Object.values(categorias),
+        backgroundColor: [
+          "#22c55e",
+          "#3b82f6",
+          "#f59e0b",
+          "#ef4444"
+        ]
       }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: "#e2e8f0"
+          }
+        }
+      }
     }
   });
 }
 
+// ===============================
+// 🚀 INICIAR APP
+// ===============================
 atualizarTela();
