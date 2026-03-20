@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Gastos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>💰 Controle de Gastos</h1>
+
+  <div class="form">
+    <input type="text" id="nome" placeholder="Nome (ex: gasolina)">
+    <input type="number" id="valor" placeholder="Valor (R$)">
+    
+    <select id="categoria">
+      <option>Alimentação</option>
+      <option>Transporte</option>
+      <option>Lazer</option>
+      <option>Outros</option>
+    </select>
+
+    <button onclick="adicionarGasto()">Adicionar</button>
+  </div>
+
+  <h2>Total: R$ <span id="total">0</span></h2>
+
+  <ul id="lista"></ul>
+
+  <canvas id="grafico"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
